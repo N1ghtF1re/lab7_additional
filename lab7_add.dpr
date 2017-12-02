@@ -43,6 +43,11 @@ begin
     isError:=true;
     err:= err + #10#13 + ' - At the end of the expression, a sign is found';
   end;
+  if (str[1] in prior1) then
+  begin
+    isError:=true;
+    err:= err + #10#13 + ' - At the begin of the expression, a sign is found';
+  end;
   while(i <= Length(str)) do
   begin
     if (not (str[i] in acceptChar)) then
@@ -58,6 +63,11 @@ begin
         isError:=True;
         err:= err + #10#13 + ' - After the parentheses there is no mathematical sign';
       end;
+      if(str[i-1] in prior1) then
+      begin
+        isError:=True;
+        err:= err + #10#13 + ' - Before the parentheses there is no mathematical sign';
+      end;
     end;
     if (str[i] = '(') then
     begin
@@ -67,6 +77,16 @@ begin
         isError:=True;
         err:= err + #10#13 + ' - Before the parentheses there is no mathematical sign';
       end;
+      if((str[i+1] in prior1) or (str[i+1] = ')')) then
+      begin
+        isError:=True;
+        err:= err + #10#13 + ' - After the parentheses there is no mathematical sign';
+      end;
+    end;
+    if((closeparentheses > openparentheses) and (not isError))then
+    begin
+      isError:=True;
+      err:= err + #10#13 + ' - A closing parenthesis is encountered without an appropriate opening';
     end;
     if ((str[i] in sign) and (str[i+1] in sign)) then
     begin
@@ -214,7 +234,7 @@ begin
       Writeln('===============================================================');
       writeln('The following errors are entered in the expression you entered:');
       Writeln(error);
-      Writeln('Please re-enter the expression');
+      Writeln(#10#13, 'Please re-enter the expression');
       Writeln('===============================================================');
     end;
     Readln(expr);
