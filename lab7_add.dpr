@@ -120,6 +120,7 @@ procedure formatingFistPrioritet(var str:string);
 var i,j:byte;
 csign:char;
 L,r,ml,mr:Byte;
+brk:boolean;
 begin
   i:=1;
   l:=0;
@@ -137,7 +138,10 @@ begin
       str[i]:= ' ';
       ml:=0;
       mr:=0;
-      for j:=i to Length(str)+1 do
+      j:=i;
+      brk:=false;
+      while((j <= length(str)+1) and (not brk)) do
+      //for j:=i to Length(str)+1 do
       begin
         case str[j] of
           ')': Inc(mr);
@@ -149,6 +153,7 @@ begin
           i:=j+1;
           break;
         end;
+        Inc(j);
       end;
     end;
     Inc(i);
@@ -159,6 +164,7 @@ procedure formatingSecondPrioritet(var str:string);
 var i,j:byte;
 csign:char;
 l,r,ml,mr:Byte;
+brk:Boolean;
 begin
   i:=1;
   l:=0;
@@ -176,7 +182,10 @@ begin
       str[i]:= ' ';
       ml:=0;
       mr:=0;
-      for j:=i+1 to Length(str)+1 do
+      j:=i+1;
+      brk:=false;
+      //for j:=i+1 to Length(str)+1 do
+      while((j<=Length(str)+1) and (not brk)) do
       begin
         case str[j] of
           ')': Inc(mr);
@@ -186,8 +195,9 @@ begin
         begin
           Insert(' ' + csign,str,j);
           i:=j+1;
-          break;
+          brk:=true;
         end;
+        Inc(j);
       end;
     end;
     Inc(i);
@@ -198,6 +208,7 @@ procedure workWithParentheses(var str:string);
 var substr:string;
     i,j,lpos,rpos,nl,nr:byte;
     ParNum:Byte;
+    brk: boolean;
 begin
   ParNum:=0;
   for i:=1 to Length(str) do
@@ -207,17 +218,24 @@ begin
   end;
   while (ParNum <> 0) do
   begin
-    for j:=1 to Length(str) do
+    j:=1;
+    brk:=false;
+    //for j:=1 to Length(str) do
+    while ((j <= length(str)) and (not brk)) do
     begin
       if(str[j]  = '(') then
       begin
         lpos:=j;
-        Break;
+        brk:=true;
       end;
+      inc(j);
     end;
     nl:=0;
     nr:=0;
-    for j:=lpos to Length(str) do
+    //for j:=lpos to Length(str) do
+    j:=lpos;
+    brk:=false;
+    while((j<=length(str)) and (not brk)) do
     begin
       if(str[j]  = '(') then
         Inc(nl);
@@ -226,8 +244,9 @@ begin
       if((str[j]  = ')') and (nr = nl)) then
       begin
         rpos:=j;
-        Break;
+        brk:=true;
       end;
+      inc(j);
     end;
     substr:=Copy(str,lpos+1,rpos-lpos-1);
     Delete(str,lpos,rpos-lpos+1);
