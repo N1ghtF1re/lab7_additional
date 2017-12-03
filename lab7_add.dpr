@@ -1,6 +1,19 @@
 program lab7_add;
 
 {$APPTYPE CONSOLE}
+resourcestring
+  rsEnterExpr = 'Please, enter your mathematical expression';
+  rsErrorFound = 'The following errors are entered in the expression you entered:';
+  rsReenter = 'Please re-enter the expression';
+  rsTwoNumInRow = 'There are two numbers in a row';
+  rsSignAtEnd = 'At the end of the expression, a sign is found';
+  rsSignAtBegin = 'At the begin of the expression, a sign is found';
+  rsIllegalChar = 'Illegal characters used:';
+  rsAfterParNoSign = 'After the parentheses there is no mathematical sign';
+  rsBeforeParNoSign = 'Before the parentheses there is no mathematical sign';
+  rsClosingWithoutOpening = 'A closing parenthesis is encountered without an appropriate opening';
+  rsTwoSignInRow = 'I met two signs in a row. Please use parentheses';
+  rsNoMatchNumCloseOpen = 'The number of opening and closing parentheses does not match';
 const acceptChar = ['0'..'9', '+', '-', '*', '/', ')', '('];
 const sign=['+', '-', '*', '/'];
 const numbers = ['0'..'9'];
@@ -21,7 +34,7 @@ begin
     begin
       if((str[i-1] in numbers) and (str[i+1] in numbers)) then
       begin
-        error:=error+ #10#13 +' - There are two numbers in a row';
+        error:=error+ #10#13 +' - ' + rsTwoNumInRow;
         errstatus:=True;
       end;
       Delete(str,i,1)
@@ -41,19 +54,19 @@ begin
   if (str[length(str)] in sign) then
   begin
     isError:=true;
-    err:= err + #10#13 + ' - At the end of the expression, a sign is found';
+    err:= err + #10#13 + ' - ' + rsSignAtEnd;
   end;
   if (str[1] in prior1) then
   begin
     isError:=true;
-    err:= err + #10#13 + ' - At the begin of the expression, a sign is found';
+    err:= err + #10#13 + ' - ' + rsSignAtBegin;
   end;
   while(i <= Length(str)) do
   begin
     if (not (str[i] in acceptChar)) then
     begin
       isError:=true;
-      err:= err + #10#13 + ' - Illegal characters used: "' + str[i]+'"';
+      err:= err + #10#13 + ' - ' + rsIllegalChar +' "' + str[i]+'"';
     end;
     if (str[i] = ')') then
     begin
@@ -61,12 +74,12 @@ begin
       if(str[i+1] in numbers) then
       begin
         isError:=True;
-        err:= err + #10#13 + ' - After the parentheses there is no mathematical sign';
+        err:= err + #10#13 + ' - ' + rsAfterParNoSign;
       end;
       if(str[i-1] in prior1) then
       begin
         isError:=True;
-        err:= err + #10#13 + ' - Before the parentheses there is no mathematical sign';
+        err:= err + #10#13 + ' - ' + rsBeforeParNoSign;
       end;
     end;
     if (str[i] = '(') then
@@ -75,30 +88,30 @@ begin
       if(str[i-1] in numbers) then
       begin
         isError:=True;
-        err:= err + #10#13 + ' - Before the parentheses there is no mathematical sign';
+        err:= err + #10#13 + ' - ' + rsBeforeParNoSign;
       end;
       if((str[i+1] in prior1) or (str[i+1] = ')')) then
       begin
         isError:=True;
-        err:= err + #10#13 + ' - After the parentheses there is no mathematical sign';
+        err:= err + #10#13 + ' - ' + rsAfterParNoSign;
       end;
     end;
     if((closeparentheses > openparentheses) and (not isError))then
     begin
       isError:=True;
-      err:= err + #10#13 + ' - A closing parenthesis is encountered without an appropriate opening';
+      err:= err + #10#13 + ' - ' + rsClosingWithoutOpening;
     end;
     if ((str[i] in sign) and (str[i+1] in sign)) then
     begin
       isError:=True;
-      err:= err + #10#13 + ' - I met two signs in a row. Please use parentheses';
+      err:= err + #10#13 + ' - ' + rsTwoSignInRow;
     end;
     inc(i);
   end;
   if (openparentheses <> closeparentheses ) then
   begin
     isError:=true;
-    err:= err + #10#13 + ' - The number of opening and closing parentheses does not match';
+    err:= err + #10#13 + ' - ' + rsNoMatchNumCloseOpen;
   end;
   isErrorExpression:=isError;
 end;
@@ -226,15 +239,16 @@ begin
 end;
 
 begin
-  Writeln('Please, enter your mathematical expression');
+  error:='';
+  Writeln(rsEnterExpr);
   repeat
     errstatus:=false;
     if (error <> '') then
     begin
       Writeln('===============================================================');
-      writeln('The following errors are entered in the expression you entered:');
+      writeln(rsErrorFound);
       Writeln(error);
-      Writeln(#10#13, 'Please re-enter the expression');
+      Writeln(#10#13, rsReenter);
       Writeln('===============================================================');
     end;
     Readln(expr);
