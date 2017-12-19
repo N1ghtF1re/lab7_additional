@@ -117,6 +117,15 @@ begin
 end;
 
 procedure formatingFistPrioritet(var str:string);
+{===============================================
+If we find the sign of the first priority - we
+move it to the right until the next sign, that
+was 3 * 4 * 4, after the first pass will be 3 4 * *,
+then go with the next character and do the same,
+going to the next character or end of the line
+Attention! Brackets are treated as one operand,
+those 2 * (3 * 4) will turn into 2 (3 * 4) *
+================================================}
 var i,j:byte;
 csign:char;
 L,r,ml,mr:Byte;
@@ -134,14 +143,12 @@ begin
     if((str[i] in prior1) and (l=r)) then
     begin
       csign:=str[i];
-      //Delete(str,i,1);
       str[i]:= ' ';
       ml:=0;
       mr:=0;
       j:=i;
       brk:=false;
       while((j <= length(str)+1) and (not brk)) do
-      //for j:=i to Length(str)+1 do
       begin
         case str[j] of
           ')': Inc(mr);
@@ -151,7 +158,7 @@ begin
         begin
           Insert(' ' + csign,str,j);
           i:=j+1;
-          break;
+          brk:=true;
         end;
         Inc(j);
       end;
@@ -161,6 +168,16 @@ begin
 end;
 
 procedure formatingSecondPrioritet(var str:string);
+{==================================================
+If we find the sign of the second priority - we move
+it to the right until the next sign of the second
+priority, those were 3 + 4 + 4, after the first pass
+will be 3 4 + +, then go with the next symbol and do
+the same, going to the next character or end of the
+line
+Attention! Parentheses are treated as one operand,
+those 2 + (3 + 4) will become 2 (3 + 4) +
+===================================================}
 var i,j:byte;
 csign:char;
 l,r,ml,mr:Byte;
@@ -178,7 +195,6 @@ begin
     if((str[i] in prior2) and (l=r)) then
     begin
       csign:=str[i];
-      //Delete(str,i,1);
       str[i]:= ' ';
       ml:=0;
       mr:=0;
@@ -205,6 +221,14 @@ begin
 end;
 
 procedure workWithParentheses(var str:string);
+{=======================================================
+In the procedure, work is in progress on the brackets,
+where they are opened in turn, calling first the procedure
+for the first priority, then for the second. For example
+(2 + 3 * (4 + 3 * (3 + 4)) + 2) will first process
+2 + 3 * (4 + 3 * (3 + 4)) + 2, and then open the
+remaining brackets
+========================================================}
 var substr:string;
     i,j,lpos,rpos,nl,nr:byte;
     ParNum:Byte;
@@ -273,8 +297,11 @@ begin
     Readln(expr);
     error:='';
     removeSpaces(Expr);
-    Writeln(expr);
-    isErr:=isErrorExpression(ErrStatus,Expr,error);
+    //Writeln(expr);
+    if (expr = '') then
+      isErr:=true
+    else
+      isErr:=isErrorExpression(ErrStatus,Expr,error);
   until(not isErr);
   formatingFistPrioritet(Expr);
   formatingSecondPrioritet(Expr);
